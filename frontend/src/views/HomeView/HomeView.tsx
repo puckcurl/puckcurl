@@ -26,7 +26,7 @@ export default function HomeView() {
         setStatsLoading(false);
       })
       .catch(() => {
-        // Totals are non-critical, no alert on error
+        // Persist loading state on error, do not raise exception
       });
     return () => controller.abort();
   }, []);

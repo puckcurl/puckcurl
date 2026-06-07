@@ -11,24 +11,25 @@ import {
   TableRow,
 } from "@components";
 import CONSTANTS from "@constants";
-import type { Charity } from "@types";
+import type { Donation } from "@types";
+import { formatAsCurrency, formatAsLocaleDate } from "@utils/text";
 import Skeleton from "react-loading-skeleton";
 
-export default function Charities(): React.ReactNode {
-  const [charities, setCharities] = useState<Charity[]>([]);
+export default function Donations(): React.ReactNode {
+  const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   /*
-   * Load the list of approved charities
+   * Load the list of verified donations
    */
   useEffect(() => {
     const controller = new AbortController();
     client
-      .get<Charity[]>(CONSTANTS.API_ENDPOINTS.CHARITIES, {
+      .get<Donation[]>(CONSTANTS.API_ENDPOINTS.DONATIONS, {
         signal: controller.signal,
       })
       .then((response) => {
-        setCharities(response.data);
+        setDonations(response.data);
         setLoading(false);
       })
       .catch(() => {
@@ -42,37 +43,46 @@ export default function Charities(): React.ReactNode {
     // loading state table
     tableBody = [1, 2, 3].map((idx) => (
       <TableRow key={idx}>
+        <TableCell className="text-muted whitespace-nowrap">
+          <Skeleton />
+        </TableCell>
         <TableCell className="font-bold">
           <Skeleton />
         </TableCell>
-        <TableCell align="right">
+        <TableCell>
+          <Skeleton />
+        </TableCell>
+        <TableCell
+          align="right"
+          className="text-heading-blue font-bold whitespace-nowrap"
+        >
           <Skeleton />
         </TableCell>
       </TableRow>
     ));
-  } else if (charities.length === 0) {
+  } else if (donations.length === 0) {
     // empty state table
     tableBody = (
       <TableRow>
-        <TableCell colSpan={2} align="center" className="text-muted py-8">
-          No charities have been added yet — check back soon.
+        <TableCell colSpan={4} align="center" className="text-muted py-8">
+          No verified donations yet, why not break the ice?
         </TableCell>
       </TableRow>
     );
   } else {
-    // charities list table
-    tableBody = charities.map((charity) => (
-      <TableRow key={charity.id}>
-        <TableCell className="font-bold">{charity.name}</TableCell>
-        <TableCell align="right" className="whitespace-nowrap">
-          <a
-            href={charity.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-heading-blue font-bold hover:underline"
-          >
-            Visit Site
-          </a>
+    // donations list table
+    tableBody = donations.map((donation) => (
+      <TableRow key={donation.id}>
+        <TableCell className="text-muted whitespace-nowrap">
+          {formatAsLocaleDate(donation.created)}
+        </TableCell>
+        <TableCell className="font-bold">{donation.name}</TableCell>
+        <TableCell>{donation.charity}</TableCell>
+        <TableCell
+          align="right"
+          className="text-heading-blue font-bold whitespace-nowrap"
+        >
+          {formatAsCurrency(Number(donation.amount))}
         </TableCell>
       </TableRow>
     ));
@@ -83,12 +93,12 @@ export default function Charities(): React.ReactNode {
       <article className="mx-auto max-w-3xl space-y-10">
         <header className="space-y-2">
           <h1 className="font-heading text-heading-pink text-4xl font-black tracking-tight uppercase">
-            Reccomended Charities List
+            Donations List
           </h1>
           <p className="text-sm">
-            These organizations are doing the work. Every donation to them is an
-            assist. This list is curated by our organizers and community, and is
-            by no means exhaustive.
+            The list of donations in support of PUCKCURL! will update as
+            donation receipts are validated. Donors can choose to provide their
+            name or stay anonymous.
           </p>
         </header>
 
@@ -96,8 +106,10 @@ export default function Charities(): React.ReactNode {
           <Table>
             <TableHead>
               <TableRow header>
+                <TableHeaderCell>Date</TableHeaderCell>
+                <TableHeaderCell>Donor</TableHeaderCell>
                 <TableHeaderCell>Charity</TableHeaderCell>
-                <TableHeaderCell align="right">Website</TableHeaderCell>
+                <TableHeaderCell align="right">Amount</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>{tableBody}</TableBody>

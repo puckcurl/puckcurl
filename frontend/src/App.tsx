@@ -13,10 +13,11 @@ import {
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-const Privacy = lazy(() => import("@views/Privacy"));
-const Disclaimer = lazy(() => import("@views/Disclaimer"));
 const Charities = lazy(() => import("@views/Charities"));
+const Disclaimer = lazy(() => import("@views/Disclaimer"));
+const Donations = lazy(() => import("@views/Donations"));
 const Plan = lazy(() => import("@views/Plan"));
+const Privacy = lazy(() => import("@views/Privacy"));
 
 function Root() {
   return (
@@ -49,9 +50,10 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomeView /> },
           { path: constants.ROUTES.charities, element: <Charities /> },
+          { path: constants.ROUTES.disclaimer, element: <Disclaimer /> },
+          { path: constants.ROUTES.donations, element: <Donations /> },
           { path: constants.ROUTES.plan, element: <Plan /> },
           { path: constants.ROUTES.privacy, element: <Privacy /> },
-          { path: constants.ROUTES.disclaimer, element: <Disclaimer /> },
           { path: "*", element: <NotFoundView /> },
         ],
       },

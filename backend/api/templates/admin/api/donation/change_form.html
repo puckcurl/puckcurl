@@ -1,0 +1,22 @@
+{% extends "admin/change_form.html" %} {% load i18n %} {% block
+submit_buttons_bottom %} {% if not is_popup and change and not
+original.is_verified %}
+<div class="submit-row">
+    <input
+        type="submit"
+        value="{% translate 'Verify donation' %}"
+        name="_verify"
+    />
+    <input
+        type="submit"
+        value="{% translate 'Reject donation' %}"
+        name="_reject"
+        class="deletelink"
+        onclick="
+            return confirm(
+                'Reject and permanently delete this donation? This cannot be undone.',
+            );
+        "
+    />
+</div>
+{% endif %} {{ block.super }} {% endblock %}

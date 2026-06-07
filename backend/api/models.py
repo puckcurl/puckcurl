@@ -33,6 +33,10 @@ class Charity(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def approved_charities(cls):
+        return cls.objects.filter(approved=True)  # ty: ignore[unresolved-attribute]
+
 
 def make_receipt_path(instance, filename):
     """Store receipts under <private root>/receipts/ with an opaque filename"""
@@ -121,6 +125,15 @@ class Donation(models.Model):
     def verified_count(cls):
         """Total number of verified donations"""
         return cls.objects.filter(verified__isnull=False).count()  # ty: ignore[unresolved-attribute]
+
+    @classmethod
+    def verified_donations(cls):
+        """Verified donations, most-recently-verified first."""
+        return (
+            cls.objects.filter(verified__isnull=False)  # ty: ignore[unresolved-attribute]
+            .select_related("charity")
+            .order_by("-verified")
+        )
 
 
 class SiteStats(models.Model):

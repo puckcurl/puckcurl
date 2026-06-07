@@ -1,4 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 
@@ -39,7 +41,32 @@ class DonationAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     readonly_fields = ("created", "verified", "verified_by", "receipt_link")
     autocomplete_fields = ("charity",)
-    actions = ("approve",)
+    actions = ("approve", "reject")
+
+    def response_change(self, request, obj):
+        if "_verify" in request.POST:
+            if obj.is_verified:
+                self.message_user(
+                    request, "Donation is already verified.", level=messages.WARNING
+                )
+            else:
+                obj.verified = timezone.now()
+                obj.verified_by = request.user
+                obj.save(update_fields=["verified", "verified_by"])
+                self.message_user(request, "Donation verified.", level=messages.SUCCESS)
+            return HttpResponseRedirect(request.get_full_path())
+        if "_reject" in request.POST:
+            if obj.is_verified:
+                self.message_user(
+                    request,
+                    "Cannot reject a verified donation.",
+                    level=messages.ERROR,
+                )
+                return HttpResponseRedirect(request.get_full_path())
+            obj.delete()
+            self.message_user(request, "Donation rejected.", level=messages.SUCCESS)
+            return HttpResponseRedirect(reverse("admin:api_donation_changelist"))
+        return super().response_change(request, obj)
 
     @admin.display(boolean=True, description="Verified")
     def is_verified(self, obj):
@@ -62,8 +89,18 @@ class DonationAdmin(admin.ModelAdmin):
 
     @admin.action(description="Reject selected donations")
     def reject(self, request, queryset):
-        updated = queryset.delete()
-        self.message_user(request, f"Rejected {updated} donation(s).")
+        drafts = queryset.filter(verified__isnull=True)
+        skipped = queryset.filter(verified__isnull=False).count()
+        deleted = drafts.count()
+        drafts.delete()
+        if skipped:
+            self.message_user(
+                request,
+                f"Skipped {skipped} verified donation(s); verified donations "
+                "cannot be rejected.",
+                level=messages.WARNING,
+            )
+        self.message_user(request, f"Rejected {deleted} donation(s).")
 
 
 @admin.register(SiteStats)

@@ -4,3 +4,19 @@ export interface SiteStats {
   verified_count: number;
   goals_scored: number;
 }
+
+/** A verified donation - /api/donations/ */
+export interface Donation {
+  id: number;
+  created: string;
+  amount: string;
+  name: string;
+  charity: string;
+}
+
+/** An approved charity - /api/charities/ */
+export interface Charity {
+  id: number;
+  name: string;
+  url: string;
+}

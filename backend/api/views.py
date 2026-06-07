@@ -3,8 +3,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.models import Donation, SiteStats
-from api.serializers import SiteStatsSerializer
+from api.models import Charity, Donation, SiteStats
+from api.serializers import (
+    CharitySerializer,
+    DonationSerializer,
+    SiteStatsSerializer,
+)
 
 
 @api_view(["GET"])
@@ -25,4 +29,20 @@ def site_stats(request: Request) -> Response:
             "goals_scored": SiteStats.load().goals_scored,
         }
     )
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def donations(request: Request) -> Response:
+    """List all verified donations"""
+    serializer = DonationSerializer(Donation.verified_donations(), many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def charities(request: Request) -> Response:
+    """List all approved charities"""
+    serializer = CharitySerializer(Charity.approved_charities(), many=True)
     return Response(serializer.data)
