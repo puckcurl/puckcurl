@@ -1,27 +1,45 @@
 # Design System
 
+A high level overview of color and font selections for the project and any supporting marketing materials.
+
+The values below are the source of truth for marketing assets, in the app these are
+implemented as theme tokens in `frontend/src/index.css` (`@theme`). **Always prefer the role
+tokens over raw palette values** when styling.
+
 ## Color Palette
 
-- `#36C4FC` - Sky Aqua
-- `#F6A2B3` - Cherry Blossom
-- `#0C062D` - Dark Amethyst
-- `#EFF2D9` - Cream
-- `#555577` - Space Indigo
+Each color is a full 50–950 scale; the hex shown is the root shade.
 
-## Surfaces
+- `#36C4FC` - Sky Aqua (root `sky-aqua-400`)
+- `#F6A2B3` - Cherry Blossom (root `cherry-blossom-200`)
+- `#EFF2D9` - Cream (root `cream-100`)
+- `#555577` - Space Indigo (root `space-indigo-600`)
+- `#0C062D` - Dark Amethyst (root `dark-amethyst-900`)
 
-- `dark-amethyst-900` - Page background
-- `dark-amethyst-950` - Accented (darker) page background
+## Surfaces & background
+
+- `bg-page` - dark-amethyst-900 (the page surface)
+- `bg-protest` - the signature background: the dark-amethyst page color overlaid with
+  blue + pink radial gradients.
 
 ## Text
 
-Text should typically be one of three colors, pink, blue, or cream.
+Body copy is cream; headings/accents are pink or blue. Muted/subtle/faint cover
+secondary text.
 
-- `cream-200` - Cream (body text)
-- `cherry-blossom-200` - Pink (heading/accent option 1)
-- `sky-aqua-240` - Blue (heading/accent option 2)
+- `text-body` - cream-50
+- `text-heading-pink` - cherry-blossom-200 (Pink heading/accent)
+- `text-heading-blue` - sky-aqua-400 (Blue heading/accent)
+- `text-muted` - space-indigo-300
+- `text-subtle` - space-indigo-700
+- `text-faint` - space-indigo-800
+
+## Borders
+
+- `border-light` - slate-600
+- `border-dark` - slate-800
 
 ## Fonts
 
-- Montserrat - Headings
-- Open Sans - Body copy
+- `font-heading` - Montserrat (headings; auto-applied to `h1`–`h6` via the base layer)
+- `font-display` - Open Sans (body copy / default)

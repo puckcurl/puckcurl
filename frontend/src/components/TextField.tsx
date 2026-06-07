@@ -11,6 +11,8 @@ interface TextFieldProps
   label: string;
   /** Optional helper text shown beneath the input. */
   help?: string;
+  /** Optional decorative content rendered inside the input's leading edge (e.g. a currency symbol). */
+  leadingAddon?: React.ReactNode;
 }
 
 /**
@@ -23,6 +25,7 @@ export default function TextField({
   name,
   label,
   help,
+  leadingAddon,
   required,
   className,
   ...props
@@ -47,21 +50,32 @@ export default function TextField({
             </span>
           )}
         </span>
-        <input
-          id={inputId}
-          aria-required={required || undefined}
-          aria-invalid={hasError || undefined}
-          aria-describedby={describedBy}
-          className={clsx(
-            "text-body placeholder:text-space-indigo-500 bg-dark-amethyst-800 block w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none",
-            hasError
-              ? "border-red-500 focus:ring-red-500"
-              : "border-border-dark focus:ring-border-light",
-            className,
+        <div className="relative">
+          {leadingAddon && (
+            <span
+              aria-hidden="true"
+              className="text-muted pointer-events-none absolute inset-y-0 left-3 flex items-center"
+            >
+              {leadingAddon}
+            </span>
           )}
-          {...field}
-          {...props}
-        />
+          <input
+            id={inputId}
+            aria-required={required || undefined}
+            aria-invalid={hasError || undefined}
+            aria-describedby={describedBy}
+            className={clsx(
+              "text-body placeholder:text-space-indigo-500 bg-dark-amethyst-800 block w-full rounded-lg border py-2 pr-3 focus:ring-2 focus:outline-none",
+              leadingAddon ? "pl-7" : "pl-3",
+              hasError
+                ? "border-red-500 focus:ring-red-500"
+                : "border-border-dark focus:ring-border-light",
+              className,
+            )}
+            {...field}
+            {...props}
+          />
+        </div>
       </label>
       {help && (
         <p id={helpId} className="text-muted mt-1 text-sm">

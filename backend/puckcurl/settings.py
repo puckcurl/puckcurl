@@ -110,11 +110,30 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # The SPA build output is collected/served as static. Only include it when
 # present so `runserver` doesn't warn in dev (where Vite serves the SPA).
 STATICFILES_DIRS = [SPA_DIR] if SPA_DIR.exists() else []
-# Vite already content-hashes its assets, so use the non-manifest WhiteNoise
-# storage — the manifest backend would try to re-hash/rewrite them and break
-# the references baked into index.html.
+# Media is split into two roots by sensitivity:
+# - MEDIA_* is PUBLIC (e.g. logos, images) and may be served publicly.
+#   Nothing private may ever live under MEDIA_ROOT.
+# - PRIVATE_MEDIA_* holds sensitive uploads (donation receipts) and is served ONLY by
+#   the staff-gated `protected_media` view at /private/.
+MEDIA_URL = "/media/"
+MEDIA_ROOT = Path(get_env_variable("MEDIA_ROOT", str(BASE_DIR / "media")))
+PRIVATE_MEDIA_URL = "/private/"
+PRIVATE_MEDIA_ROOT = Path(
+    get_env_variable("PRIVATE_MEDIA_ROOT", str(BASE_DIR / "private"))
+)
+
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    # Receipts and any other private uploads — files land under
+    # PRIVATE_MEDIA_ROOT and resolve to URLs under the gated /private/ route.
+    "private": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": PRIVATE_MEDIA_ROOT,
+            "base_url": PRIVATE_MEDIA_URL,
+        },
+    },
+    # Vite already content-hashes its assets, so use the non-manifest WhiteNoise storage
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },

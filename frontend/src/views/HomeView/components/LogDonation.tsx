@@ -184,9 +184,10 @@ export default function LogDonation() {
                       label="Amount Donated"
                       type="number"
                       inputMode="decimal"
+                      leadingAddon="$"
                       min="0"
                       step="0.01"
-                      placeholder="0.00"
+                      placeholder="7"
                       required
                     />
                   </div>
