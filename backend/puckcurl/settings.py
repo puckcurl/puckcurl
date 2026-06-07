@@ -46,6 +46,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # Serves the SPA for unrouted GET paths. Must precede CommonMiddleware so
+    # APPEND_SLASH is applied before this fallback.
+    "puckcurl.middleware.SPAFallbackMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

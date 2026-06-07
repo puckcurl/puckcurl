@@ -11,7 +11,7 @@ interface Step {
 const Steps: Step[] = [
   {
     number: "1",
-    title: "She Scores. You pick.",
+    title: "She scores. You pick.",
     desc: (
       <>
         Curl lights the lamp, you pick a trans-supporting charity (

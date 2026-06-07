@@ -1,6 +1,7 @@
 const CONSTANTS = {
   API_ENDPOINTS: {
     HEALTH: `${import.meta.env.VITE_API_BASE_URL}/health/`,
+    STATS: `${import.meta.env.VITE_API_BASE_URL}/stats/`,
   },
   ROUTES: {
     home: "/",

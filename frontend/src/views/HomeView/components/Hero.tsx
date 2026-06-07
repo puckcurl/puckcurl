@@ -3,12 +3,14 @@ import { Container } from "@components";
 import RaisedCard from "./RaisedCard";
 
 export interface HeroProps {
-  raised: number;
-  donors: number;
-  goals: number;
+  raised?: number;
+  donors?: number;
+  goals?: number;
+  loading?: boolean;
 }
 
-export default function Hero({ raised, donors, goals }: HeroProps) {
+export default function Hero(props: HeroProps) {
+  const { raised, donors, goals, loading } = props;
   return (
     <Container>
       <section className="flex flex-col items-center justify-center gap-8 py-12 lg:flex-row lg:justify-between">
@@ -29,7 +31,12 @@ export default function Hero({ raised, donors, goals }: HeroProps) {
           </p>
         </div>
 
-        <RaisedCard raised={raised} donors={donors} goals={goals} />
+        <RaisedCard
+          raised={raised}
+          donors={donors}
+          goals={goals}
+          loading={loading}
+        />
       </section>
     </Container>
   );

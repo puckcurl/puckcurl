@@ -1,11 +1,43 @@
+import { useEffect, useState } from "react";
+
+import client from "@client";
+import CONSTANTS from "@constants";
+import type { SiteStats } from "@types";
+
 import Hero from "./components/Hero";
 import LogDonation from "./components/LogDonation";
 import Playbook from "./components/PlaybookCard";
 
 export default function HomeView() {
+  const [stats, setStats] = useState<SiteStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState<boolean>(true);
+
+  /*
+   * Load campaign stats
+   */
+  useEffect(() => {
+    const controller = new AbortController();
+    client
+      .get<SiteStats>(CONSTANTS.API_ENDPOINTS.STATS, {
+        signal: controller.signal,
+      })
+      .then((response) => {
+        setStats(response.data);
+        setStatsLoading(false);
+      })
+      .catch(() => {
+        // Totals are non-critical, no alert on error
+      });
+    return () => controller.abort();
+  }, []);
   return (
     <>
-      <Hero raised={999999} donors={7777} goals={10} />
+      <Hero
+        raised={stats ? Number(stats.verified_total) : undefined}
+        donors={stats?.verified_count}
+        goals={stats?.goals_scored}
+        loading={statsLoading}
+      />
       <Playbook />
       <LogDonation />
     </>

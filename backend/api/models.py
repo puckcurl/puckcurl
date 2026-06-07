@@ -40,11 +40,6 @@ def make_receipt_path(instance, filename):
     return f"receipts/{uuid.uuid4().hex}{ext}"
 
 
-def select_private_storage():
-    """The private (PII) storage — keeps the absolute path out of migrations."""
-    return storages["private"]
-
-
 class DonationReceipt(models.Model):
     """An uploaded proof-of-donation file (image or PDF).
 
@@ -57,7 +52,7 @@ class DonationReceipt(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     file = models.FileField(
         upload_to=make_receipt_path,
-        storage=select_private_storage,
+        storage=storages["private"],
     )
 
     class Meta:
@@ -116,11 +111,16 @@ class Donation(models.Model):
 
     @classmethod
     def verified_total(cls):
-        """Sum of `amount` across all verified donations (0 if there are none)."""
+        """Sum of `amount` across all verified donations"""
         total = cls.objects.filter(verified__isnull=False).aggregate(  # ty: ignore[unresolved-attribute]
             total=models.Sum("amount")
         )["total"]
         return total or Decimal("0")
+
+    @classmethod
+    def verified_count(cls):
+        """Total number of verified donations"""
+        return cls.objects.filter(verified__isnull=False).count()  # ty: ignore[unresolved-attribute]
 
 
 class SiteStats(models.Model):

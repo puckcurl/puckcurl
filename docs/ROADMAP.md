@@ -7,9 +7,6 @@ A light snapshot of what's built vs. planned.
 - **Log a donation (API)** — `LogDonation` form exists in the UI but does **not** submit
   to the API yet, and there's no receipt-upload or donation-create endpoint yet (no DRF
   serializers/views over the models).
-- **Public totals** — the `Hero` displays raised / donors / goals, but values are not yet
-  wired to real data. The raised amount has a model helper (`Donation.verified_total()`);
-  what's missing is the DRF endpoint and the frontend wiring (donor count + goals too).
 - **Charities / Plan views** — present but empty/stubbed.
 - **`/donations` route** — declared in `constants.ROUTES` but has no view yet.
 

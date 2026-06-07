@@ -60,6 +60,11 @@ class DonationAdmin(admin.ModelAdmin):
         )
         self.message_user(request, f"Approved {updated} donation(s).")
 
+    @admin.action(description="Reject selected donations")
+    def reject(self, request, queryset):
+        updated = queryset.delete()
+        self.message_user(request, f"Rejected {updated} donation(s).")
+
 
 @admin.register(SiteStats)
 class SiteStatsAdmin(admin.ModelAdmin):

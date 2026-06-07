@@ -4,6 +4,7 @@ import constants from "@constants";
 import { AppLayout } from "@layouts";
 import HomeView from "@views/HomeView/HomeView";
 import NotFoundView from "@views/NotFoundView";
+import { SkeletonTheme } from "react-loading-skeleton";
 import {
   Outlet,
   RouterProvider,
@@ -20,15 +21,20 @@ const Plan = lazy(() => import("@views/Plan"));
 function Root() {
   return (
     <>
-      <ScrollRestoration />
-      <Outlet />
-      <ToastContainer
-        position="top-right"
-        pauseOnFocusLoss={false}
-        toastClassName="text-sm"
-        closeOnClick
-        pauseOnHover
-      />
+      <SkeletonTheme
+        baseColor="var(--color-dark-amethyst-900)"
+        highlightColor="var(--color-dark-amethyst-800)"
+      >
+        <ScrollRestoration />
+        <Outlet />
+        <ToastContainer
+          position="top-right"
+          pauseOnFocusLoss={false}
+          toastClassName="text-sm"
+          closeOnClick
+          pauseOnHover
+        />
+      </SkeletonTheme>
     </>
   );
 }

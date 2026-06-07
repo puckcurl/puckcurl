@@ -48,7 +48,7 @@ export default function Footer() {
       <div className="text-muted flex flex-wrap justify-between gap-10 px-14 py-12 align-bottom">
         <div>
           <p className="m-0 text-sm leading-relaxed">
-            PUCKCURL is an independent, fan-organized initiative not affiliated
+            PUCKCURL! is an independent, fan-organized initiative not affiliated
             with the PWHL, any team, or any player.
           </p>
           <p className="text-heading-pink font-black">
