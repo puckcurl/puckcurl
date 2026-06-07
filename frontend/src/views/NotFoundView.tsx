@@ -1,12 +1,24 @@
+import { Container } from "@components";
+import constants from "@constants";
 import { Link } from "react-router-dom";
 
-export default function NotFoundView() {
+export default function NotFoundView(): React.ReactNode {
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">Page not found</h1>
-      <Link to="/" className="text-blue-600 underline">
-        Go home
-      </Link>
-    </div>
+    <Container>
+      <article className="mx-auto max-w-3xl space-y-6 text-center">
+        <p className="font-heading text-heading-blue text-7xl font-black">
+          404
+        </p>
+        <h1 className="font-heading text-heading-pink text-4xl font-black tracking-tight uppercase">
+          Page not found
+        </h1>
+        <p className="text-muted leading-relaxed">
+          The page you're looking for doesn't exist or has moved.
+        </p>
+        <Link to={constants.ROUTES.home} className="link font-bold">
+          Go Back Home
+        </Link>
+      </article>
+    </Container>
   );
 }

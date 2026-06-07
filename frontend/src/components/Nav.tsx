@@ -25,11 +25,11 @@ export default function Nav() {
       {({ open, close }) => (
         <>
           <div className="flex items-center justify-between px-6 py-5 md:px-14">
-            <a href={constants.ROUTES.home} className="flex items-center gap-3">
+            <Link to={constants.ROUTES.home} className="flex items-center gap-3">
               <span className="font-heading text-body text-2xl font-extrabold tracking-wide">
                 PUCKCURL!
               </span>
-            </a>
+            </Link>
 
             <nav className="hidden items-center gap-4 md:flex">
               {NavLinks.map((l) => (

@@ -2,6 +2,7 @@ import { lazy } from "react";
 
 import constants from "@constants";
 import { AppLayout } from "@layouts";
+import ErrorView from "@views/ErrorView";
 import HomeView from "@views/HomeView/HomeView";
 import NotFoundView from "@views/NotFoundView";
 import { SkeletonTheme } from "react-loading-skeleton";
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
+    errorElement: <ErrorView />,
     children: [
       {
         element: <AppLayout />,
