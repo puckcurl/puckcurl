@@ -15,7 +15,7 @@ const CONSTANTS = {
     plan: "/plan",
   },
   SOCIAL: {
-    github: "https://github.com/",
+    github: "https://github.com/puckcurl/puckcurl",
     bluesky: "https://bsky.app/",
     discord: "https://discord.gg/Heq7FfUSeN",
     instagram: "https://www.instagram.com/puckcurl",

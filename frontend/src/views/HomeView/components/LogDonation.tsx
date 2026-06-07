@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
 import client from "@client";
-import { Container, LoadingSpinner, TextField } from "@components";
+import {
+  ComboboxField,
+  Container,
+  LoadingSpinner,
+  TextField,
+} from "@components";
 import CONSTANTS from "@constants";
 import {
   CheckBadgeIcon,
   DocumentArrowUpIcon,
 } from "@heroicons/react/24/outline";
-import type { DonationReceipt } from "@types";
+import type { Charity, DonationReceipt } from "@types";
 import clsx from "clsx";
 import { Form, Formik } from "formik";
 import { useDropzone } from "react-dropzone";
@@ -27,6 +32,25 @@ export default function LogDonation() {
   const [receiptId, setReceiptId] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [charityNames, setCharityNames] = useState<string[]>([]);
+
+  /*
+   * Load approved charities to suggest in the typeahead.
+   */
+  useEffect(() => {
+    const controller = new AbortController();
+    client
+      .get<Charity[]>(CONSTANTS.API_ENDPOINTS.CHARITIES, {
+        signal: controller.signal,
+      })
+      .then((response) => {
+        setCharityNames(response.data.map((charity) => charity.name));
+      })
+      .catch(() => {
+        // Suggestions are optional, ignore failures.
+      });
+    return () => controller.abort();
+  }, []);
 
   /*
    * Upload receipt image to API
@@ -240,10 +264,11 @@ export default function LogDonation() {
                           />
                         </div>
                         <div className="flex-1">
-                          <TextField
+                          <ComboboxField
                             name="charity"
                             label="Charity"
                             placeholder="Organization name"
+                            options={charityNames}
                             required
                           />
                         </div>

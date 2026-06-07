@@ -65,14 +65,16 @@ export default function Charities(): React.ReactNode {
       <TableRow key={charity.id}>
         <TableCell className="font-bold">{charity.name}</TableCell>
         <TableCell align="right" className="whitespace-nowrap">
-          <a
-            href={charity.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-heading-blue font-bold hover:underline"
-          >
-            Visit Site
-          </a>
+          {charity.url?.length > 0 && (
+            <a
+              href={charity.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-heading-blue font-bold hover:underline"
+            >
+              Visit Site
+            </a>
+          )}
         </TableCell>
       </TableRow>
     ));

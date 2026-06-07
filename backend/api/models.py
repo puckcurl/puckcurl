@@ -22,7 +22,7 @@ class Charity(models.Model):
     """
 
     name = models.CharField(max_length=255)
-    url = models.URLField()
+    url = models.URLField(null=True, blank=True)
     approved = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
