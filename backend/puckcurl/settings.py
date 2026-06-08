@@ -142,6 +142,11 @@ STORAGES = {
     },
 }
 
+# WhiteNoise normally detects cache-forever-able files via the manifest storage
+# which we don't use, but the vite-emitted assets are content-hashed and can be
+# cached forever.
+WHITENOISE_IMMUTABLE_FILE_TEST = r"^/static/assets/"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {

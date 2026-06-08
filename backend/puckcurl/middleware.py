@@ -30,7 +30,11 @@ class SPAFallbackMiddleware:
     def _spa_index():
         index_file = settings.SPA_DIR / "index.html"
         if index_file.exists():
-            return FileResponse(open(index_file, "rb"))
+            response = FileResponse(open(index_file, "rb"))
+            # The SPA shell references the latest content-hashed assets, so it
+            # must never be served stale
+            response["Cache-Control"] = "no-cache"
+            return response
         return HttpResponse(
             "SPA build not found. Run `npm run build` in frontend/ "
             "(or use the Vite dev server during development).",

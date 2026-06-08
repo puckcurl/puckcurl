@@ -19,4 +19,8 @@ def protected_media(request, path):
     full_path = (private_root / path).resolve()
     if private_root not in full_path.parents or not full_path.is_file():
         raise Http404
-    return FileResponse(open(full_path, "rb"))
+    response = FileResponse(open(full_path, "rb"))
+    # These files are sensitive. Instruct caches / proxies never to store
+    # them so a private file can't leak from a cache.
+    response["Cache-Control"] = "no-store, private"
+    return response
