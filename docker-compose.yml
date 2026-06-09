@@ -40,6 +40,7 @@ services:
       DB_DEFAULT_PASSWORD: ${DB_DEFAULT_PASSWORD:-puckcurl}
       DB_DEFAULT_HOST: ${DB_DEFAULT_HOST:-db}
       DB_DEFAULT_PORT: ${DB_DEFAULT_PORT:-3306}
+      CURRENCYLAYER_API_KEY: ${CURRENCYLAYER_API_KEY:-}
     volumes:
       - ./backend:/app:cached
     ports:
@@ -49,6 +50,9 @@ services:
       ofelia.enabled: "true"
       ofelia.job-exec.cleanup-receipts.schedule: "@every 1h"
       ofelia.job-exec.cleanup-receipts.command: "uv run python manage.py cleanup_orphan_receipts"
+      # Nightly exchange rate refresh
+      ofelia.job-exec.update-exchange-rate.schedule: "0 0 3 * * *"
+      ofelia.job-exec.update-exchange-rate.command: "uv run python manage.py update_exchange_rate"
     depends_on:
       db:
         condition: service_healthy

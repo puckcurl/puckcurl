@@ -8,6 +8,9 @@ The rate is always expressed as Canadian dollars per 1 USD (e.g. `1.3700`
 means 1 USD = 1.37 CAD). It lives on the `SiteStats` singleton as
 `ca_exchange_rate`.
 
+It is refreshed automatically by the `update_exchange_rate` management command,
+which fetches USD to CAD from CurrencyLayer (`backend/libraries/currencylayer/`).
+
 ## 1. Reporting
 
 - The donation form picks the currency from the viewer's locale
