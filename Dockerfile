@@ -42,7 +42,10 @@ RUN set -eux; uv sync --frozen --no-install-project
 COPY backend/ ./
 COPY --from=frontend-builder /backend/spa ./spa
 RUN set -eux; uv sync --frozen
-RUN set -eux; uv run python manage.py collectstatic --noinput
+# throwaway key for this build step so collectstatic will run
+RUN set -eux; \
+    DJANGO_SECRET_KEY="build-time-collectstatic-placeholder" \
+    uv run python manage.py collectstatic --noinput
 
 EXPOSE 8000
 CMD ["uv", "run", "gunicorn", "puckcurl.wsgi:application", "--bind", "0.0.0.0:8000"]

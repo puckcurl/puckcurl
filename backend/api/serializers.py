@@ -1,22 +1,17 @@
 from decimal import ROUND_HALF_UP, Decimal
-from pathlib import Path
 
 from rest_framework import serializers
 
-from api.models import Charity, Donation, DonationReceipt, SiteStats
+from django.db import IntegrityError
 
-# Mirror the frontend dropzone limits
-MAX_RECEIPT_SIZE = 10 * 1024 * 1024  # 10 MB
-ALLOWED_RECEIPT_EXTENSIONS = {
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".gif",
-    ".webp",
-    ".heic",
-    ".heif",
-    ".pdf",
-}
+from api.models import Charity, Donation, DonationReceipt, SiteStats
+from api.validators import (
+    ERROR_FILE_TOO_LARGE,
+    ERROR_FILE_TYPE_INVALID,
+    has_allowed_file_extension,
+    has_allowed_file_header,
+    has_allowed_file_size,
+)
 
 
 class SiteStatsSerializer(serializers.Serializer):
@@ -56,23 +51,24 @@ class CharitySerializer(serializers.ModelSerializer):
 class DonationReceiptSerializer(serializers.ModelSerializer):
     """Write-only intake of a proof-of-donation upload.
 
-    Accepts the file and returns the new receipt's id.
+    Accepts the file and returns the new receipt's claim token.
     """
 
     class Meta:
         model = DonationReceipt
-        fields = ["id", "created", "file"]
-        read_only_fields = ["id", "created"]
+        fields = ["token", "created", "file"]
+        read_only_fields = ["token", "created"]
         extra_kwargs = {"file": {"write_only": True}}
 
     def validate_file(self, file):
-        if file.size > MAX_RECEIPT_SIZE:
-            raise serializers.ValidationError(
-                f"File is too large. Maximum size is "
-                f"{MAX_RECEIPT_SIZE // (1024 * 1024)}MB."
-            )
-        if Path(file.name).suffix.lower() not in ALLOWED_RECEIPT_EXTENSIONS:
-            raise serializers.ValidationError("Only image and PDF files are accepted.")
+        if not has_allowed_file_size(file.size):
+            raise serializers.ValidationError(ERROR_FILE_TOO_LARGE)
+        if not has_allowed_file_extension(file.name):
+            raise serializers.ValidationError(ERROR_FILE_TYPE_INVALID)
+        head = file.read(32)
+        file.seek(0)
+        if not has_allowed_file_header(head):
+            raise serializers.ValidationError(ERROR_FILE_TYPE_INVALID)
         return file
 
 
@@ -84,7 +80,8 @@ class DonationCreateSerializer(serializers.ModelSerializer):
         choices=["USD", "CAD"],
         default="USD",
     )
-    receipt = serializers.PrimaryKeyRelatedField(
+    receipt = serializers.SlugRelatedField(
+        slug_field="token",
         queryset=DonationReceipt.objects.all(),  # ty: ignore[unresolved-attribute]
         required=False,
         allow_null=True,
@@ -116,6 +113,13 @@ class DonationCreateSerializer(serializers.ModelSerializer):
         rate = Decimal("1.0000")
         if currency == "CAD":
             rate = SiteStats.load().ca_exchange_rate
+            # The field validator keeps this positive, but guard at the point of
+            # use too: a zero/negative rate would otherwise 500 (division) or
+            # store a negative amount that corrupts the totals.
+            if rate <= 0:
+                raise serializers.ValidationError(
+                    {"currency": ["Currency conversion is temporarily unavailable."]}
+                )
             validated_data["amount"] = (validated_data["amount"] / rate).quantize(
                 Decimal("0.01"), rounding=ROUND_HALF_UP
             )
@@ -124,4 +128,10 @@ class DonationCreateSerializer(serializers.ModelSerializer):
         charity = Charity.objects.filter(name__iexact=name).first()  # ty: ignore[unresolved-attribute]
         if charity is None:
             charity = Charity.objects.create(name=name)  # ty: ignore[unresolved-attribute]
-        return Donation.objects.create(charity=charity, **validated_data)  # ty: ignore[unresolved-attribute]
+        try:
+            return Donation.objects.create(charity=charity, **validated_data)  # ty: ignore[unresolved-attribute]
+        except IntegrityError:
+            # Two donations raced to claim the same receipt
+            raise serializers.ValidationError(
+                {"receipt": ["This receipt has already been used."]}
+            )

@@ -22,7 +22,7 @@ export interface Donation {
 
 /** A receipt created from an upload - POST /api/receipts/ */
 export interface DonationReceipt {
-  id: number;
+  token: string;
   created: string;
 }
 

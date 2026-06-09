@@ -78,27 +78,29 @@ No PII (receipt file, verifier) is exposed.
 ## POST `/api/receipts/`
 
 Accepts a single proof-of-donation upload (`multipart/form-data`) and returns
-its id. The frontend uploads the receipt as soon as it's dropped — while the
-user finishes the form — then attaches the returned `id` to the donation on
-submit. A receipt that no donation ever claims is reaped by the orphan-cleanup
-job.
+a claim token. The frontend uploads the receipt, while the user finishes the form.
+The token is attached to the donation on submit. A receipt that no donation ever claims is
+reaped by the orphan-cleanup job.
 
 Request (multipart):
 
-- `file` — image or PDF, ≤ 10 MB. Other types/sizes are rejected (mirrors the
-  dropzone limits).
+- `file` — image or PDF, ≤ 10 MB. Type is validated by both extension and
+  content (leading-byte signature); other types/sizes are rejected.
+  Oversized requests are rejected up front with `413`.
 
 Response (`201 Created`):
 
 ```json
 {
-  "id": 7,
+  "token": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
   "created": "2026-06-07T18:30:00Z"
 }
 ```
 
-The file is **write-only** — it is never echoed back. Receipts are private and
+The file is\*write-only. Receipts are private and
 reachable only via the staff-gated `/private-media/` route.
+
+This endpoint is rate-limited per client IP.
 
 ## POST `/api/donations/`
 
@@ -114,7 +116,7 @@ Request (JSON):
   "currency": "CAD",
   "charity": "Trevor Project",
   "name": "Sam R.",
-  "receipt": 7
+  "receipt": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
 }
 ```
 
@@ -127,12 +129,13 @@ Request (JSON):
   existing charities; an unknown name creates a new charity as **unapproved**
   (a proposal) for an organizer to vet.
 - `name` — optional donor display name; blank shows as `"Anonymous"`.
-- `receipt` — optional id from `POST /api/receipts/`. Rejected if already
-  claimed by another donation.
+- `receipt` — claim `token` from `POST /api/receipts/`. Rejected if
+  already claimed by another donation.
 
 Response (`201 Created`) echoes the accepted fields (`id`, `amount`, `name`,
-`charity` name, `receipt`); `amount` is the stored USD value. Validation errors
-return `400` with per-field messages.
+`charity` name, `receipt` token); `amount` is the stored USD value. Validation
+errors return `400` with per-field messages. This endpoint is rate-limited per
+client IP.
 
 ## GET `/api/charities/`
 

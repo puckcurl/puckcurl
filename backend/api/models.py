@@ -6,6 +6,7 @@ from pathlib import Path
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import storages
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -44,6 +45,11 @@ def make_receipt_path(instance, filename):
     return f"receipts/{uuid.uuid4().hex}{ext}"
 
 
+def select_private_storage():
+    """Return the private storage backend for receipt uploads"""
+    return storages["private"]
+
+
 class DonationReceipt(models.Model):
     """An uploaded proof-of-donation file (image or PDF).
 
@@ -53,10 +59,11 @@ class DonationReceipt(models.Model):
     periodic cleanup job.
     """
 
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     file = models.FileField(
         upload_to=make_receipt_path,
-        storage=storages["private"],
+        storage=select_private_storage,
     )
 
     class Meta:
@@ -153,6 +160,7 @@ class SiteStats(models.Model):
         max_digits=10,
         decimal_places=4,
         default=Decimal("1.0000"),
+        validators=[MinValueValidator(Decimal("0.0001"))],
         help_text=("Canadian dollars per 1 USD."),
     )
 

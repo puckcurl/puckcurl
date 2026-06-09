@@ -30,7 +30,7 @@ export default function LogDonation() {
   const [fileUploadStatus, setFileUploadStatus] =
     useState<FileUploadState>("new");
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [receiptId, setReceiptId] = useState<number | null>(null);
+  const [receiptToken, setReceiptToken] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [charityNames, setCharityNames] = useState<string[]>([]);
@@ -68,10 +68,10 @@ export default function LogDonation() {
         CONSTANTS.API_ENDPOINTS.RECEIPTS,
         body,
       );
-      setReceiptId(data.id);
+      setReceiptToken(data.token);
       setFileUploadStatus("success");
     } catch {
-      setReceiptId(null);
+      setReceiptToken(null);
       setFileUploadStatus("error");
       setUploadError("That receipt could not be uploaded. Please try again.");
     }
@@ -237,7 +237,7 @@ export default function LogDonation() {
                         amount: values.amount,
                         charity: values.charity.trim(),
                         name: values.name.trim(),
-                        receipt: receiptId,
+                        receipt: receiptToken,
                         currency: getLocaleCurrency().currency,
                       });
                       setSubmitted(true);
@@ -291,7 +291,7 @@ export default function LogDonation() {
                       )}
                       <button
                         type="submit"
-                        disabled={isSubmitting || receiptId === null}
+                        disabled={isSubmitting || receiptToken === null}
                         className="font-heading text-dark-amethyst-900 disabled:bg-space-indigo-700 w-full rounded-lg bg-sky-400 px-5 py-2.5 font-bold transition-colors hover:bg-sky-600 enabled:hover:text-white disabled:cursor-default"
                       >
                         {isSubmitting ? "Submitting..." : "Submit Donation"}

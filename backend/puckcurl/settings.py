@@ -3,6 +3,8 @@
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -22,9 +24,16 @@ def env_list(name, default=""):
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
-SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY", "dev-insecure-change-me")
-
-DEBUG = env_bool("DJANGO_DEBUG", True)
+DEBUG = env_bool("DJANGO_DEBUG", False)
+SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        # Local development convenience only.
+        SECRET_KEY = "dev-insecure-change-me"
+    else:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY must be set when DEBUG is disabled."
+        )
 
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 
@@ -162,6 +171,21 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         *(["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
     ],
+    # Rate limits for the unauthenticated write endpoints
+    # Applied per-view via the scoped throttles in api/throttling.py
+    "DEFAULT_THROTTLE_RATES": {
+        "receipts": "10/min",
+        "donations": "20/min",
+    },
+    # Number of trusted reverse proxies in front of the app
+    "NUM_PROXIES": int(get_env_variable("NUM_PROXIES", "1")),
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": get_env_variable("VALKEY_URL", "redis://127.0.0.1:6379/0"),
+    }
 }
 
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:5173")
@@ -175,6 +199,13 @@ if env_bool("SECURE_PROXY_SSL_HEADER", False):
 SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
 CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
 SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", not DEBUG)
+
+# HSTS. Should be enabled only in production
+SECURE_HSTS_SECONDS = int(get_env_variable("SECURE_HSTS_SECONDS", "0"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
+    "SECURE_HSTS_INCLUDE_SUBDOMAINS", SECURE_HSTS_SECONDS > 0
+)
+SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
 
 # CurrencyLayer API
 CURRENCYLAYER_API_KEY = os.environ.get("CURRENCYLAYER_API_KEY")

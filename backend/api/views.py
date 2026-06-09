@@ -1,5 +1,9 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    throttle_classes,
+)
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -13,6 +17,8 @@ from api.serializers import (
     ExchangeRateSerializer,
     SiteStatsSerializer,
 )
+from api.throttling import DonationReportThrottle, ReceiptUploadThrottle
+from api.validators import ERROR_FILE_TOO_LARGE, MAX_RECEIPT_REQUEST_SIZE
 
 
 @api_view(["GET"])
@@ -50,6 +56,7 @@ def exchange_rate(request: Request) -> Response:
 
 @api_view(["GET", "POST"])
 @permission_classes([AllowAny])
+@throttle_classes([DonationReportThrottle])
 def donations(request: Request) -> Response:
     """List verified donations, or report a new one as a draft"""
     if request.method == "POST":
@@ -63,8 +70,22 @@ def donations(request: Request) -> Response:
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([ReceiptUploadThrottle])
 def receipts(request: Request) -> Response:
-    """Accept a proof-of-donation upload and return its id"""
+    """Accept a proof-of-donation upload and return its claim token"""
+    # Reject oversized bodies up front, before Django streams the whole upload
+    # to a temp file (the serializer's size check only runs after that).
+    content_length = request.META.get("CONTENT_LENGTH")
+    if content_length:
+        try:
+            too_large = int(content_length) > MAX_RECEIPT_REQUEST_SIZE
+        except ValueError:
+            too_large = False
+        if too_large:
+            return Response(
+                {"file": [ERROR_FILE_TOO_LARGE]},
+                status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            )
     serializer = DonationReceiptSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
