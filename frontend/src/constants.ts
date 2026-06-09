@@ -1,10 +1,11 @@
 const CONSTANTS = {
   API_ENDPOINTS: {
-    HEALTH: `${import.meta.env.VITE_API_BASE_URL}/health/`,
-    STATS: `${import.meta.env.VITE_API_BASE_URL}/stats/`,
-    DONATIONS: `${import.meta.env.VITE_API_BASE_URL}/donations/`,
-    RECEIPTS: `${import.meta.env.VITE_API_BASE_URL}/receipts/`,
     CHARITIES: `${import.meta.env.VITE_API_BASE_URL}/charities/`,
+    DONATIONS: `${import.meta.env.VITE_API_BASE_URL}/donations/`,
+    EXCHANGE_RATE: `${import.meta.env.VITE_API_BASE_URL}/exchange-rate/`,
+    HEALTH: `${import.meta.env.VITE_API_BASE_URL}/health/`,
+    RECEIPTS: `${import.meta.env.VITE_API_BASE_URL}/receipts/`,
+    STATS: `${import.meta.env.VITE_API_BASE_URL}/stats/`,
   },
   ROUTES: {
     home: "/",

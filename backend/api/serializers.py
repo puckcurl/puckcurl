@@ -1,8 +1,9 @@
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 from rest_framework import serializers
 
-from api.models import Charity, Donation, DonationReceipt
+from api.models import Charity, Donation, DonationReceipt, SiteStats
 
 # Mirror the frontend dropzone limits
 MAX_RECEIPT_SIZE = 10 * 1024 * 1024  # 10 MB
@@ -24,6 +25,13 @@ class SiteStatsSerializer(serializers.Serializer):
     verified_total = serializers.DecimalField(max_digits=10, decimal_places=2)
     verified_count = serializers.IntegerField()
     goals_scored = serializers.IntegerField()
+    ca_exchange_rate = serializers.DecimalField(max_digits=10, decimal_places=4)
+
+
+class ExchangeRateSerializer(serializers.Serializer):
+    """Public, read-only current exchange rate"""
+
+    ca_exchange_rate = serializers.DecimalField(max_digits=10, decimal_places=4)
 
 
 class DonationSerializer(serializers.ModelSerializer):
@@ -72,6 +80,10 @@ class DonationCreateSerializer(serializers.ModelSerializer):
     """Write-only intake for a fan-reported donation"""
 
     charity = serializers.CharField(max_length=255)
+    currency = serializers.ChoiceField(
+        choices=["USD", "CAD"],
+        default="USD",
+    )
     receipt = serializers.PrimaryKeyRelatedField(
         queryset=DonationReceipt.objects.all(),  # ty: ignore[unresolved-attribute]
         required=False,
@@ -80,7 +92,7 @@ class DonationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Donation
-        fields = ["id", "amount", "name", "charity", "receipt"]
+        fields = ["id", "amount", "currency", "name", "charity", "receipt"]
 
     def validate_amount(self, amount):
         if amount <= 0:
@@ -99,6 +111,15 @@ class DonationCreateSerializer(serializers.ModelSerializer):
         return receipt
 
     def create(self, validated_data):
+        # All amounts are stored in USD. Convert to USD using the current rate
+        currency = validated_data.pop("currency", "USD")
+        rate = Decimal("1.0000")
+        if currency == "CAD":
+            rate = SiteStats.load().ca_exchange_rate
+            validated_data["amount"] = (validated_data["amount"] / rate).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+        validated_data["effective_exchange_rate"] = rate
         name = validated_data.pop("charity").strip()
         charity = Charity.objects.filter(name__iexact=name).first()  # ty: ignore[unresolved-attribute]
         if charity is None:

@@ -2,6 +2,7 @@ import { lazy } from "react";
 
 import constants from "@constants";
 import { AppLayout } from "@layouts";
+import { ExchangeRateProvider } from "@providers/ExchangeRateProvider";
 import ErrorView from "@views/ErrorView";
 import HomeView from "@views/HomeView/HomeView";
 import NotFoundView from "@views/NotFoundView";
@@ -22,22 +23,20 @@ const Privacy = lazy(() => import("@views/Privacy"));
 
 function Root() {
   return (
-    <>
-      <SkeletonTheme
-        baseColor="var(--color-dark-amethyst-900)"
-        highlightColor="var(--color-dark-amethyst-800)"
-      >
-        <ScrollRestoration />
-        <Outlet />
-        <ToastContainer
-          position="top-right"
-          pauseOnFocusLoss={false}
-          toastClassName="text-sm"
-          closeOnClick
-          pauseOnHover
-        />
-      </SkeletonTheme>
-    </>
+    <SkeletonTheme
+      baseColor="var(--color-dark-amethyst-900)"
+      highlightColor="var(--color-dark-amethyst-800)"
+    >
+      <ScrollRestoration />
+      <Outlet />
+      <ToastContainer
+        position="top-right"
+        pauseOnFocusLoss={false}
+        toastClassName="text-sm"
+        closeOnClick
+        pauseOnHover
+      />
+    </SkeletonTheme>
   );
 }
 
@@ -64,5 +63,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <ExchangeRateProvider>
+      <RouterProvider router={router} />
+    </ExchangeRateProvider>
+  );
 }

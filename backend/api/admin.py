@@ -39,7 +39,13 @@ class DonationAdmin(admin.ModelAdmin):
     list_display = ("amount", "name", "charity", "is_verified", "created")
     list_filter = ("verified", "charity")
     search_fields = ("name",)
-    readonly_fields = ("created", "verified", "verified_by", "receipt_link")
+    readonly_fields = (
+        "created",
+        "effective_exchange_rate",
+        "verified",
+        "verified_by",
+        "receipt_link",
+    )
     autocomplete_fields = ("charity",)
     actions = ("approve", "reject")
 

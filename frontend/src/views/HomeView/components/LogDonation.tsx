@@ -13,6 +13,7 @@ import {
   DocumentArrowUpIcon,
 } from "@heroicons/react/24/outline";
 import type { Charity, DonationReceipt } from "@types";
+import { getLocaleCurrency } from "@utils/currency";
 import clsx from "clsx";
 import { Form, Formik } from "formik";
 import { useDropzone } from "react-dropzone";
@@ -164,7 +165,7 @@ export default function LogDonation() {
           ) : (
             <>
               {/* File upload complete state */}
-              {fileUploadStatus == "success" && (
+              {fileUploadStatus === "success" && (
                 <div className="mb-12 text-center">
                   <CheckBadgeIcon className="mx-auto size-12 text-green-500" />
                   <span className="font-heading text-body font-bold">
@@ -174,7 +175,7 @@ export default function LogDonation() {
               )}
 
               {/* File upload in progress state */}
-              {fileUploadStatus == "uploading" && (
+              {fileUploadStatus === "uploading" && (
                 <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors">
                   <LoadingSpinner className="text-heading-blue my-4" />
                   <p className="font-heading text-body font-bold">
@@ -192,7 +193,7 @@ export default function LogDonation() {
                     isDragActive
                       ? "border-border-light bg-dark-amethyst-900"
                       : "border-border-dark hover:border-border-light",
-                    fileUploadStatus == "error" && "border-red-500",
+                    fileUploadStatus === "error" && "border-red-500",
                   )}
                 >
                   <label htmlFor="receipt-upload" className="sr-only">
@@ -204,9 +205,10 @@ export default function LogDonation() {
                   </p>
                   <DocumentArrowUpIcon className="text-space-indigo-600 my-4 size-12" />
                   <p className="text-muted mt-2 text-sm">
-                    Image or PDF files, up to {MAX_FILE_SIZE_MB}MB. You may redact personal information.
+                    Image or PDF files, up to {MAX_FILE_SIZE_MB}MB. You may
+                    redact personal information.
                   </p>
-                  {fileUploadStatus == "error" && (
+                  {fileUploadStatus === "error" && (
                     <p className="mt-2 text-sm text-red-400">{uploadError}</p>
                   )}
                 </div>
@@ -236,6 +238,7 @@ export default function LogDonation() {
                         charity: values.charity.trim(),
                         name: values.name.trim(),
                         receipt: receiptId,
+                        currency: getLocaleCurrency().currency,
                       });
                       setSubmitted(true);
                     } catch {
@@ -261,6 +264,7 @@ export default function LogDonation() {
                             step="0.01"
                             placeholder="7"
                             required
+                            help={`Total in ${getLocaleCurrency().currency}`}
                           />
                         </div>
                         <div className="flex-1">

@@ -3,6 +3,12 @@ export interface SiteStats {
   verified_total: string;
   verified_count: number;
   goals_scored: number;
+  ca_exchange_rate: string;
+}
+
+/** Current exchange rate - /api/exchange-rate/ */
+export interface ExchangeRate {
+  ca_exchange_rate: string;
 }
 
 /** A verified donation - /api/donations/ */

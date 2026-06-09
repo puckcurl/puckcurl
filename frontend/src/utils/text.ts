@@ -1,14 +1,17 @@
+import { getLocaleCurrency } from "@utils/currency";
+
 /**
- * Format a numeric value as a currency string
+ * Format a numeric value as a currency string in the user's locale
  * @param value - monetary amount (e.g. 123)
  * @returns - formatted currency string (e.g. $123)
  */
 export function formatAsCurrency(value: number | null | undefined): string {
-  const numberFormat = Intl.NumberFormat("en-US", {
+  const { locale, currency } = getLocaleCurrency();
+  const numberFormat = Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "USD",
+    currency,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   });
   if (typeof value !== "number") {
     return numberFormat.format(0).replace("0", "");

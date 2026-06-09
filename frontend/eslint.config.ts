@@ -7,7 +7,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 import globals from "globals";
 import path from "node:path";
 
-const gitignorePath = path.resolve(".", ".gitignore");
+const gitignorePath = path.resolve("../", ".gitignore");
 
 const jsConfig: Linter.Config[] = [
   // ESLint Recommended Rules

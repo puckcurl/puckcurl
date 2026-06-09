@@ -1,3 +1,4 @@
+import { getLocaleCurrency } from "@utils/currency";
 import { formatAsCurrency, formatAsNumber } from "@utils/text";
 import Skeleton from "react-loading-skeleton";
 
@@ -18,7 +19,7 @@ export default function RaisedCard(props: RaisedCardProps) {
           <span className="bg-heading-pink relative inline-flex size-4 rounded-full" />
         </span>
         <span className="font-heading text-muted text-sm font-bold tracking-widest uppercase">
-          Raised In Protest
+          Raised In Protest ({getLocaleCurrency().currency})
         </span>
       </div>
 

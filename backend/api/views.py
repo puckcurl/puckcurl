@@ -10,6 +10,7 @@ from api.serializers import (
     DonationCreateSerializer,
     DonationReceiptSerializer,
     DonationSerializer,
+    ExchangeRateSerializer,
     SiteStatsSerializer,
 )
 
@@ -25,12 +26,24 @@ def health(request: Request) -> Response:
 @permission_classes([AllowAny])
 def site_stats(request: Request) -> Response:
     """Public campaign stats"""
+    stats = SiteStats.load()
     serializer = SiteStatsSerializer(
         {
             "verified_total": Donation.verified_total(),
             "verified_count": Donation.verified_count(),
-            "goals_scored": SiteStats.load().goals_scored,
+            "goals_scored": stats.goals_scored,
+            "ca_exchange_rate": stats.ca_exchange_rate,
         }
+    )
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def exchange_rate(request: Request) -> Response:
+    """Current exchange rate"""
+    serializer = ExchangeRateSerializer(
+        {"ca_exchange_rate": SiteStats.load().ca_exchange_rate}
     )
     return Response(serializer.data)
 

@@ -11,13 +11,16 @@ import {
   TableRow,
 } from "@components";
 import CONSTANTS from "@constants";
+import { useExchangeRate } from "@providers/ExchangeRateProvider";
 import type { Donation } from "@types";
+import { convertFromUSD } from "@utils/currency";
 import { formatAsCurrency, formatAsLocaleDate } from "@utils/text";
 import Skeleton from "react-loading-skeleton";
 
 export default function Donations(): React.ReactNode {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { rate, ensureRate } = useExchangeRate();
 
   /*
    * Load the list of verified donations
@@ -37,6 +40,13 @@ export default function Donations(): React.ReactNode {
       });
     return () => controller.abort();
   }, []);
+
+  /*
+   * Fetch exchange rate if not already in the ExchangeRateContext
+   */
+  useEffect(() => {
+    ensureRate();
+  }, [ensureRate]);
 
   let tableBody: React.ReactNode;
   if (loading) {
@@ -82,7 +92,7 @@ export default function Donations(): React.ReactNode {
           align="right"
           className="text-heading-blue font-bold whitespace-nowrap"
         >
-          {formatAsCurrency(Number(donation.amount))}
+          {formatAsCurrency(convertFromUSD(Number(donation.amount), rate ?? 1))}
         </TableCell>
       </TableRow>
     ));

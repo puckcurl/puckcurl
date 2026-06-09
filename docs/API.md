@@ -3,14 +3,15 @@
 DRF endpoints under the `api` app, mounted at `/api/`. All are session/CSRF
 auth with `AllowAny` permission unless noted.
 
-| Method | Path              | Name         | Description                     |
-| ------ | ----------------- | ------------ | ------------------------------- |
-| GET    | `/api/health/`    | `health`     | Liveness probe                  |
-| GET    | `/api/stats/`     | `site-stats` | Public campaign stats           |
-| GET    | `/api/donations/` | `donations`  | List of verified donations      |
-| POST   | `/api/donations/` | `donations`  | Report a donation (as a draft)  |
-| POST   | `/api/receipts/`  | `receipts`   | Upload a proof-of-donation file |
-| GET    | `/api/charities/` | `charities`  | List of approved charities      |
+| Method | Path                  | Name            | Description                     |
+| ------ | --------------------- | --------------- | ------------------------------- |
+| GET    | `/api/health/`        | `health`        | Liveness probe                  |
+| GET    | `/api/stats/`         | `site-stats`    | Public campaign stats           |
+| GET    | `/api/exchange-rate/` | `exchange-rate` | Current USD→CAD exchange rate   |
+| GET    | `/api/donations/`     | `donations`     | List of verified donations      |
+| POST   | `/api/donations/`     | `donations`     | Report a donation (as a draft)  |
+| POST   | `/api/receipts/`      | `receipts`      | Upload a proof-of-donation file |
+| GET    | `/api/charities/`     | `charities`     | List of approved charities      |
 
 ## GET `/api/health`
 
@@ -24,7 +25,8 @@ auth with `AllowAny` permission unless noted.
 {
   "verified_total": "0.00",
   "verified_count": 0,
-  "goals_scored": 0
+  "goals_scored": 0,
+  "ca_exchange_rate": "1.0000"
 }
 ```
 
@@ -32,6 +34,23 @@ auth with `AllowAny` permission unless noted.
   serializes `DecimalField` to preserve precision).
 - `verified_count` — number of verified donations.
 - `goals_scored` — from the hand-maintained `SiteStats` singleton.
+- `ca_exchange_rate` — Canadian dollars per 1 USD, from the `SiteStats`
+  singleton (string; `DecimalField`). All stored amounts are USD; the frontend
+  can multiply by this to display CAD.
+
+## GET `/api/exchange-rate/`
+
+The current exchange rate on its own, for clients that need only the rate (the
+donation list) without the full stats payload.
+
+```json
+{
+  "ca_exchange_rate": "1.0000"
+}
+```
+
+- `ca_exchange_rate` — Canadian dollars per 1 USD (string; `DecimalField`),
+  from the `SiteStats` singleton.
 
 ## GET `/api/donations/`
 
@@ -92,13 +111,18 @@ Request (JSON):
 ```json
 {
   "amount": "50.00",
+  "currency": "CAD",
   "charity": "Trevor Project",
   "name": "Sam R.",
   "receipt": 7
 }
 ```
 
-- `amount` — required, must be greater than zero.
+- `amount` — required, must be greater than zero. Interpreted in `currency`.
+- `currency` — optional, `"USD"` or `"CAD"` (defaults to `"USD"`). Amounts are
+  stored in USD: a `"CAD"` amount is converted using `ca_exchange_rate` from
+  `SiteStats` before storage. Not persisted as a field — only the converted USD
+  `amount` is kept.
 - `charity` — required charity **name**. Matched case-insensitively against
   existing charities; an unknown name creates a new charity as **unapproved**
   (a proposal) for an organizer to vet.
@@ -107,8 +131,8 @@ Request (JSON):
   claimed by another donation.
 
 Response (`201 Created`) echoes the accepted fields (`id`, `amount`, `name`,
-`charity` name, `receipt`). Validation errors return `400` with per-field
-messages.
+`charity` name, `receipt`); `amount` is the stored USD value. Validation errors
+return `400` with per-field messages.
 
 ## GET `/api/charities/`
 

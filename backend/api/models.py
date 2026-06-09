@@ -75,6 +75,12 @@ class Donation(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    effective_exchange_rate = models.DecimalField(
+        max_digits=10,
+        decimal_places=4,
+        default=Decimal("1.0000"),
+        help_text=("Canadian dollars per 1 USD applied when this donation was stored"),
+    )
     receipt = models.OneToOneField(
         DonationReceipt,
         on_delete=models.SET_NULL,
@@ -143,6 +149,12 @@ class SiteStats(models.Model):
     """
 
     goals_scored = models.PositiveIntegerField(default=0)
+    ca_exchange_rate = models.DecimalField(
+        max_digits=10,
+        decimal_places=4,
+        default=Decimal("1.0000"),
+        help_text=("Canadian dollars per 1 USD."),
+    )
 
     class Meta:
         verbose_name = "site stats"
