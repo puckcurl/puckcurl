@@ -67,6 +67,9 @@ services:
       # Nightly exchange rate refresh
       ofelia.job-exec.update-exchange-rate.schedule: "0 0 3 * * *"
       ofelia.job-exec.update-exchange-rate.command: "uv run python manage.py update_exchange_rate"
+      # Nightly cleanup of orphaned charities
+      ofelia.job-exec.cleanup-charities.schedule: "0 30 3 * * *"
+      ofelia.job-exec.cleanup-charities.command: "uv run python manage.py cleanup_orphan_charities"
     depends_on:
       db:
         condition: service_healthy

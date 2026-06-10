@@ -1,0 +1,16 @@
+{% comment %}
+Inline receipt rendering for the donation/receipt admin. Renderable images show
+a thumbnail that expands to a larger floating preview on hover.
+
+Other accepted types (PDF) fall back to a link.
+{% endcomment %}
+{% if is_image %}
+<span class="receipt-thumb">
+  <a href="{{ url }}" target="_blank">
+    <img class="receipt-thumb__small" src="{{ url }}" alt="Receipt preview">
+  </a>
+  <img class="receipt-thumb__large" src="{{ url }}" alt="">
+</span>
+{% else %}
+<a href="{{ url }}" target="_blank">View receipt</a>
+{% endif %}

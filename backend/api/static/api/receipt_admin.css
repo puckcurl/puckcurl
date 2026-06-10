@@ -1,0 +1,39 @@
+/* Inline receipt preview for the donation/receipt admin.
+*  A small thumbnail that expands into a larger floating preview on hover.
+*/
+.form-row.field-receipt_link,
+.form-row.field-file_link {
+    overflow: visible;
+}
+
+.receipt-thumb {
+    position: relative;
+    display: inline-block;
+}
+
+.receipt-thumb__small {
+    display: block;
+    width: 120px;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--border-color, #ccc);
+}
+
+.receipt-thumb__large {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 130px;
+    z-index: 1000;
+    width: 500px;
+    max-width: 80vw;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--border-color, #ccc);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    background: var(--body-bg, #fff);
+}
+
+.receipt-thumb:hover .receipt-thumb__large {
+    display: block;
+}
