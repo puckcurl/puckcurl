@@ -131,18 +131,3 @@
     @apply hover:text-sky-aqua-100;
   }
 }
-
-/* Toastify color scheme */
-.Toastify {
-  --toastify-font-family: var(--font-display);
-
-  /*--toastify-icon-color-info: var(--color-info-text);
-  --toastify-icon-color-success: var(--color-complete-text);
-  --toastify-icon-color-warning: var(--color-progress-text);
-  --toastify-icon-color-error: var(--color-error-text);
-
-  --toastify-color-progress-info: var(--color-info-text);
-  --toastify-color-progress-success: var(--color-complete-text);
-  --toastify-color-progress-warning: var(--color-progress-text);
-  --toastify-color-progress-error: var(--color-error-text);*/
-}

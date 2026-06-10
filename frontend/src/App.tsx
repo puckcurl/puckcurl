@@ -13,7 +13,6 @@ import {
   ScrollRestoration,
   createBrowserRouter,
 } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 
 const Charities = lazy(() => import("@views/Charities"));
 const Disclaimer = lazy(() => import("@views/Disclaimer"));
@@ -29,13 +28,6 @@ function Root() {
     >
       <ScrollRestoration />
       <Outlet />
-      <ToastContainer
-        position="top-right"
-        pauseOnFocusLoss={false}
-        toastClassName="text-sm"
-        closeOnClick
-        pauseOnHover
-      />
     </SkeletonTheme>
   );
 }

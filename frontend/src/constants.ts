@@ -17,7 +17,6 @@ const CONSTANTS = {
   },
   SOCIAL: {
     bluesky: "https://bsky.app/profile/puckcurl.bsky.social",
-    discord: "https://discord.gg/xKkQ8RpXMh",
     instagram: "https://www.instagram.com/puckcurl",
   },
 };
