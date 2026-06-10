@@ -175,7 +175,7 @@ REST_FRAMEWORK = {
     # Applied per-view via the scoped throttles in api/throttling.py
     "DEFAULT_THROTTLE_RATES": {
         "receipts": "10/min",
-        "donations": "20/min",
+        "donations": "10/min",
     },
     # Number of trusted reverse proxies in front of the app
     "NUM_PROXIES": int(get_env_variable("NUM_PROXIES", "1")),
