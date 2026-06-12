@@ -14,6 +14,18 @@ SEED_CHARITIES = [
     ("Jim Toy Community Center", "https://www.jimtoycenter.org/"),
     ("Ozone House", "https://ozonehouse.org/"),
     ("Keep Growing Detroit", "https://www.detroitagriculture.net/"),
+    ("Athlete Ally", "https://www.athleteally.org/"),
+    ("Glisten", "https://glisten.org/campaigns/changing-the-game/"),
+    ("NAACP", "https://naacp.org/"),
+    (
+        "National Center for LGBTQ Rights",
+        "https://www.nclrights.org/our-work/discrimination/sports/",
+    ),
+    ("National Urban League", "https://nul.org/"),
+    ("You Can Play", "https://www.youcanplay.org/"),
+    ("Black LGBTQ+ Liberation, Inc.", "https://www.blinc.love/"),
+    ("BlaqOut", "https://blaqout.org/"),
+    ("Ella Baker Center", "https://ellabakercenter.org/"),
 ]
 
 
