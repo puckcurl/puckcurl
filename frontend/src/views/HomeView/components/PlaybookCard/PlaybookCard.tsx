@@ -20,10 +20,10 @@ export default function PlaybookCard({ charities }: PlaybookCardProps) {
       title: "She scores. You pick.",
       desc: (
         <>
-          Curl lights the lamp, you pick a trans-supporting charity.
-          <br />
-          <br />
-          <CharityPickerModal charities={charities} />
+          <div>Curl lights the lamp, you pick a trans-supporting charity.</div>
+          <div className="mt-3">
+            <CharityPickerModal charities={charities} />
+          </div>
         </>
       ),
     },

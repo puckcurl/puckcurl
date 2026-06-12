@@ -12,8 +12,15 @@ interface CharityPickerModalProps {
 export default function CharityPickerModal({
   charities,
 }: CharityPickerModalProps): React.ReactNode {
+  const buttonClasses =
+    "border-border-light text-body hover:border-heading-blue hover:text-heading-blue inline-block rounded-xl border px-3 py-1";
+
   if (charities.length === 0) {
-    return null;
+    return (
+      <Link to={constants.ROUTES.charities} className={buttonClasses}>
+        Get a Suggestion
+      </Link>
+    );
   }
 
   return (
@@ -21,11 +28,7 @@ export default function CharityPickerModal({
       label="Get a random charity suggestion"
       width="large"
       trigger={({ onClick }) => (
-        <button
-          type="button"
-          onClick={onClick}
-          className="border-border-light text-body hover:border-heading-blue hover:text-heading-blue rounded-xl border px-3 py-1"
-        >
+        <button type="button" onClick={onClick} className={buttonClasses}>
           Get a Suggestion
         </button>
       )}

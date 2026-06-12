@@ -106,7 +106,9 @@ export default function CharitySlotMachine({
               : "border-border-dark shadow-heading-pink/0",
           )}
         >
-          {winner.name}
+          <span className="flex h-16 items-center justify-center">
+            <span className="line-clamp-2">{winner.name}</span>
+          </span>
         </a>
       ) : (
         // Hide from assistive tech until spinning complete
@@ -114,7 +116,7 @@ export default function CharitySlotMachine({
           aria-hidden={spinning || undefined}
           className={clsx(reelClasses, "border-border-dark")}
         >
-          <span className="relative block overflow-hidden">
+          <span className="relative block h-16 overflow-hidden">
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={reel.tick}
@@ -122,9 +124,9 @@ export default function CharitySlotMachine({
                 animate={{ y: 0 }}
                 exit={{ y: "-100%" }}
                 transition={{ duration: reel.delay / 1000, ease: "linear" }}
-                className="block"
+                className="flex h-16 w-full items-center justify-center"
               >
-                {reel.name}
+                <span className="line-clamp-2">{reel.name}</span>
               </motion.span>
             </AnimatePresence>
           </span>
