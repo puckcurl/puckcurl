@@ -50,25 +50,20 @@ Contributions that cross these lines won't be merged, regardless of code quality
 
 ## Before you open a PR
 
-Please make sure these pass locally. Lint and formatting are enforced.
-
-**Frontend** (`cd frontend`):
+Please make sure these pass locally.
 
 ```bash
-npm run lint      # eslint, must be clean (--max-warnings 0)
-npm run format    # prettier
+make format-be   # backend (ruff format)
+make lint-be     # backend (ruff + ty check)
 ```
-
-**Backend** (`cd backend`):
 
 ```bash
-uv run ruff check .     # lint
-uv run ruff format .    # format
-uv run ty check         # type check
+make format-fe   # frontend (prettier)
+make lint-fe     # frontend (eslint)
 ```
 
-Also confirm migrations apply cleanly, and include any new migration files your
-model changes generate.
+Also confirm migrations apply cleanly (`make migrate`), and include any new
+migration files your model changes generate.
 
 **Run the app and preview your change.** Lint and types passing isn't enough,
 start the project locally and exercise the actual behavior you changed in the

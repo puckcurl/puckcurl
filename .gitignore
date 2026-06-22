@@ -21,11 +21,6 @@ venv/
 .ropeproject
 htmlcov/
 
-# ───────────────────────── Env / secrets ───────────────────────────
-.env
-*.env.local
-deploy/
-
 # ───────────────────────── Editors / OS ────────────────────────────
 .vscode/*
 !.vscode/extensions.json
@@ -37,3 +32,9 @@ deploy/
 logs
 *.log
 npm-debug.log*
+
+# ───────────────────────── Env / secrets ───────────────────────────
+.env*
+!.env.example
+.gitsecret/keys/random_seed
+!*.secret

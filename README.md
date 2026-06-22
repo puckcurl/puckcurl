@@ -61,10 +61,12 @@ In development the Vite dev server (with HMR) serves the SPA at `:5173` and prox
 
 ### Quick Start:
 
+Common tasks are wrapped as `make` targets (run `make help` to see them all).
+
 ```bash
 cp .env.example .env  # swap out default passwords as needed
-docker compose up --build
-docker compose run --rm backend uv run python manage.py migrate
+make dev              # build and run the stack in the foreground
+make migrate          # in a second terminal, apply migrations
 ```
 
 - Frontend: http://localhost:5173
@@ -77,20 +79,20 @@ Configuration is read from the `.env` file, see `docker-compose.yml` for how val
 ### Django operations
 
 You will need to run Django management commands against the local environment for many operations,
-such as creating migrations, applying migrations, and creating superusers. A few examples:
+such as creating migrations, applying migrations, and creating superusers. Keep `make dev` running in another terminal when running Django management commands. A few examples:
 
 ```bash
 # Create migrations from model changes
-docker compose run --rm backend uv run python manage.py makemigrations
+make makemigrations
 
 # Apply migrations to the local database
-docker compose run --rm backend uv run python manage.py migrate
+make migrate
 
 # Create an admin login for the Django admin (interactive)
-docker compose run --rm backend uv run python manage.py createsuperuser
+make createsuperuser
 
 # Run any management command (e.g. shell)
-docker compose run --rm backend uv run python manage.py <command> [args]
+make manage ARGS="<command> [args]"
 
 # Run the development server with cron scheduler
 docker compose --profile scheduler up

@@ -7,7 +7,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-puckcurl}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - db-data:/var/lib/mysql
     ports:
       - "3306:3306"
     healthcheck:
@@ -111,4 +111,4 @@ services:
       - backend
 
 volumes:
-  mysql-data:
+  db-data:
