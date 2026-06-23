@@ -7,7 +7,8 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  help                Show this help message"
-	@echo "  dev                 Bring up the local dev stack"
+	@echo "  run                 Bring up the local dev stack"
+	@echo "  stop                Stop the local dev stack"
 	@echo "  makemigrations      Generate django migrations"
 	@echo "  migrate             Apply django migrations"
 	@echo "  createsuperuser     Create a django superuser"
@@ -23,9 +24,9 @@ help:
 
 # --- Dev -------------------------------------------------------------------
 
-DOCKEREXEC := docker compose exec backend
-DOCKEREXECFE := docker compose exec frontend
-MANAGEPY := $(DOCKEREXEC) uv run python manage.py
+DOCKERRUN := docker compose run --rm backend
+DOCKERRUNFE := docker compose run --rm --no-deps frontend
+MANAGEPY := $(DOCKERRUN) uv run python manage.py
 
 .PHONY: secrets-hide
 secrets-hide:
@@ -35,9 +36,13 @@ secrets-hide:
 secrets-reveal:
 	git-secret reveal -f
 
-.PHONY: dev
-dev:
+.PHONY: run
+run:
 	docker compose up --build
+
+.PHONY: stop
+stop:
+	docker compose down
 
 .PHONY: makemigrations
 makemigrations:
@@ -57,21 +62,19 @@ manage:
 
 .PHONY: lint-be
 lint-be:
-	$(DOCKEREXEC) uv run ruff check .
-	$(DOCKEREXEC) uv run ruff format --check .
-	$(DOCKEREXEC) uv run ty check
+	$(DOCKERRUN) sh -c "uv run ruff check . && uv run ruff format --check . && uv run ty check"
 
 .PHONY: format-be
 format-be:
-	$(DOCKEREXEC) uv run ruff format .
+	$(DOCKERRUN) uv run ruff format .
 
 .PHONY: lint-fe
 lint-fe:
-	$(DOCKEREXECFE) npm run lint
+	$(DOCKERRUNFE) npm run lint
 
 .PHONY: format-fe
 format-fe:
-	$(DOCKEREXECFE) npm run format
+	$(DOCKERRUNFE) npm run format
 
 # --- Staging ---------------------------------------------------------------
 

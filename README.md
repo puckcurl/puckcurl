@@ -65,7 +65,7 @@ Common tasks are wrapped as `make` targets (run `make help` to see them all).
 
 ```bash
 cp .env.example .env  # swap out default passwords as needed
-make dev              # build and run the stack in the foreground
+make run              # build and run the stack in the foreground
 make migrate          # in a second terminal, apply migrations
 ```
 
@@ -79,7 +79,7 @@ Configuration is read from the `.env` file, see `docker-compose.yml` for how val
 ### Django operations
 
 You will need to run Django management commands against the local environment for many operations,
-such as creating migrations, applying migrations, and creating superusers. Keep `make dev` running in another terminal when running Django management commands. A few examples:
+such as creating migrations, applying migrations, and creating superusers. Keep `make run` running in another terminal when running Django management commands. A few examples:
 
 ```bash
 # Create migrations from model changes
