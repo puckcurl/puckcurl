@@ -1,89 +1,90 @@
+.DEFAULT_GOAL := help
+
 .PHONY: help
-help:
-	@echo ""
-	@echo "Usage: make [target]"
+help:  ## Show this help message
 	@echo ""
 	@echo "PUCKCURL! Project Makefile"
+	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Targets:"
-	@echo "  help                Show this help message"
-	@echo "  run                 Bring up the local dev stack"
-	@echo "  stop                Stop the local dev stack"
-	@echo "  makemigrations      Generate django migrations"
-	@echo "  migrate             Apply django migrations"
-	@echo "  createsuperuser     Create a django superuser"
-	@echo "  manage              Run an arbitrary manage.py command, e.g. make manage ARGS=\"createsuperuser\""
-	@echo "  lint-be             Lint and type-check the backend (ruff + ty)"
-	@echo "  format-be           Format the backend (ruff)"
-	@echo "  lint-fe             Lint the frontend (eslint)"
-	@echo "  format-fe           Format the frontend (prettier)"
-	@echo "  secrets-hide        Encrypt secret files with git-secret"
-	@echo "  secrets-reveal      Reveal secret files with git-secret"
-	@echo "  deploy-staging      Rsync the repo to staging, then rebuild and restart the stack"
+	@awk 'BEGIN {FS = ":.*##"} \
+		/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5); next } \
+		/^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 }' \
+		$(MAKEFILE_LIST)
 	@echo ""
 
-# --- Dev -------------------------------------------------------------------
+##@ Dev
 
-DOCKERRUN := docker compose run --rm backend
+MANAGEPY := docker compose run --rm backend uv run python manage.py
+DOCKERRUNBE := docker compose run --rm --no-deps backend
 DOCKERRUNFE := docker compose run --rm --no-deps frontend
-MANAGEPY := $(DOCKERRUN) uv run python manage.py
 
-.PHONY: secrets-hide
-secrets-hide:
-	git-secret hide -v -m
-
-.PHONY: secrets-reveal
-secrets-reveal:
-	git-secret reveal -f
-
-.PHONY: run
-run:
+.PHONY: dev
+dev:  ## Bring up the local dev stack
 	docker compose up --build
 
-.PHONY: stop
-stop:
-	docker compose down
-
 .PHONY: makemigrations
-makemigrations:
+makemigrations:  ## Generate django migrations
 	$(MANAGEPY) makemigrations
 
 .PHONY: migrate
-migrate:
+migrate:  ## Apply django migrations
 	$(MANAGEPY) migrate
 
 .PHONY: createsuperuser
-createsuperuser:
+createsuperuser:  ## Create a django superuser
 	$(MANAGEPY) createsuperuser
 
 .PHONY: manage
-manage:
+manage:  ## Run an arbitrary manage.py command, e.g. make manage ARGS="createsuperuser"
 	$(MANAGEPY) $(ARGS)
 
+.PHONY: clean
+clean:  ## Remove build artifacts and local cache
+	docker compose down --remove-orphans --rmi=local
+	find . -type f -name "*.pyc" -delete
+	find . -type d \( \
+		-name "__pycache__" -o \
+		-name ".ruff_cache" -o \
+		-name ".ropeproject" -o \
+		-name "private_media" \
+	\) -exec rm -rf {} +
+
+##@ Lint & Format
+
 .PHONY: lint-be
-lint-be:
-	$(DOCKERRUN) sh -c "uv run ruff check . && uv run ruff format --check . && uv run ty check"
+lint-be:  ## Lint and type-check the backend (ruff + ty)
+	$(DOCKERRUNBE) uv run ruff check .
+	$(DOCKERRUNBE) uv run ruff format --check .
+	$(DOCKERRUNBE) uv run ty check
 
 .PHONY: format-be
-format-be:
-	$(DOCKERRUN) uv run ruff format .
+format-be:  ## Format the backend (ruff)
+	$(DOCKERRUNBE) uv run ruff format .
 
 .PHONY: lint-fe
-lint-fe:
+lint-fe:  ## Lint the frontend (eslint)
 	$(DOCKERRUNFE) npm run lint
 
 .PHONY: format-fe
-format-fe:
+format-fe:  ## Format the frontend (prettier)
 	$(DOCKERRUNFE) npm run format
 
-# --- Staging ---------------------------------------------------------------
+##@ Deployment
 
 STAGING_HOST := ares
 STAGING_DIR  := /opt/puckcurl_staging
 STAGING_COMPOSE := docker compose -f docker-compose.staging.yml --env-file .env.staging
 
+.PHONY: secrets-hide
+secrets-hide:  ## Encrypt secret files with git-secret
+	git-secret hide -v -m
+
+.PHONY: secrets-reveal
+secrets-reveal:  ## Reveal secret files with git-secret
+	git-secret reveal -f
+
 .PHONY: deploy-staging
-deploy-staging:
+deploy-staging:  ## Rsync the repo to staging, then rebuild and restart the stack
 	rsync -avz --delete \
 		--exclude .venv \
 		--exclude .ropeproject \
