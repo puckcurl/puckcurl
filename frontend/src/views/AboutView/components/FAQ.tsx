@@ -14,18 +14,65 @@ interface FAQItem {
 const FAQItems: FAQItem[] = [
   {
     question: "Is this the best approach?",
-    answer:
-      "We don't know, but to this group of fans, it feels better than resignation. Since Britta Curl-Salemme was drafted to the PWHL, fans have been vocal about their outrage. Emails and letters have been sent, phone calls have been made, tickets have been cancelled, and games have been boycotted. Fans have booed whenever Curl touches the puck; booed even more when she scores. It is likely that many other players in the league share Curl's views and have simply kept quiet about it. Curl's move to Detroit reminded everyone that any team in the league would sign her given the chance-- she plays good hockey. For us, it provided the push needed to find another way of making our voices heard. Regardless of the impact on the league, at least this method of protest puts money into the organizations that fight for inclusion on a daily basis, and we think that matters.",
+    answer: (
+      <>
+        We don't know, but to this group of fans, it feels better than
+        resignation. Since Britta Curl-Salemme was drafted to the PWHL, fans
+        have been vocal about their feelings. Emails and letters have been sent,
+        phone calls have been made, and tickets have been cancelled. Fans have
+        booed when Curl touches the puck, and booed even louder when she scores.{" "}
+        <em className="italic">
+          It is likely that many other players in the league share Curl's views
+          and have simply kept quiet about it.
+        </em>{" "}
+        Curl's move to Detroit reminded everyone that any team in the league
+        would sign her given the chance&mdash;she plays good hockey.
+        <br />
+        <br />
+        For us, it provided the push needed to find another way of making our
+        voices heard. Regardless of the impact on the league, at least this
+        method of protest puts money into the organizations that fight for
+        inclusion on a daily basis, and we think that matters. There may not be
+        one right approach, but we beleive that this method of protest is
+        constructive.
+      </>
+    ),
   },
   {
     question: "Why does it matter?",
-    answer:
-      "It is important to let the league know how we feel by making our voices heard. However, it's just as important to support the organizations and foundations that are working to make the world a better and more inclusive place. The charities we recommend are actively doing the work to facilitate change and create supportive environments for LGBTQ+ and BIPOC individuals, particularly in the Detroit area but also on a national scale. When you choose to donate in protest, you become an active playmaker as a part of that change!",
+    answer: (
+      <>
+        It is important to let the league know how we feel by making our voices
+        heard. But even more than that, it's important to support the people and
+        organizations that are working to make the world a better and more
+        inclusive place. The charities we recommend are actively doing the work
+        to facilitate change and create supportive environments for LGBTQ+ and
+        BIPOC individuals, both in the Detroit area and on a national scale.
+        When you choose to donate in protest, you become an active playmaker as
+        a part of that change!
+      </>
+    ),
   },
   {
     question: "How does it work?",
-    answer:
-      "For every goal Curl scores, fans mobilize to donate to a charity of their choice and we record the progress here. We don't want anyone to feel constrained by these parameters. You are welcome to donate for any reason at all, and in any amount that feels right for you. You can donate for every penalty she serves, or for every point she gets, or every game she plays in. You can donate repeatedly or just once. We will happily catalogue every donation made in protest of her views.",
+    answer: (
+      <>
+        The idea is simple: For every goal Curl scores, fans mobilize to donate
+        to a charity of their choice and we record the progress here.
+        <br />
+        <br />
+        We don't want anyone to feel constrained by these parameters. You are
+        welcome to donate for any reason at all, and in any amount that feels
+        right for you. You can donate for every penalty Curl serves, or for
+        every point she gets, or every game she plays in. You can donate{" "}
+        <em className="italic">in support</em> of another player that espouses
+        inclusive views. You can donate repeatedly or just once.
+        <br />
+        <br />
+        We will happily catalogue every donation made by hockey fans in support
+        of the trans community.
+      </>
+    ),
   },
 ];
 

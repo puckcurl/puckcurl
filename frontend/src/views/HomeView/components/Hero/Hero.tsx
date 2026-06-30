@@ -24,7 +24,7 @@ export default function Hero(props: HeroProps) {
 
         <p className="text-muted my-8 text-lg leading-relaxed">
           Every goal #77 Britta Curl-Salemme scores becomes a donation to
-          support the trans community she decries.
+          support the trans community.
         </p>
       </div>
 
