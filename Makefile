@@ -74,6 +74,9 @@ format-fe:  ## Format the frontend (prettier)
 STAGING_HOST := ares
 STAGING_DIR  := /opt/puckhate_staging
 STAGING_COMPOSE := docker compose -f docker-compose.staging.yml --env-file .env.staging
+PROD_HOST := ares
+PROD_DIR  := /opt/puckhate
+PROD_COMPOSE := docker compose -f docker-compose.prod.yml --env-file .env.prod
 
 .PHONY: secrets-hide
 secrets-hide:  ## Encrypt secret files with git-secret
@@ -102,3 +105,23 @@ deploy-staging:  ## Rsync the repo to staging, then rebuild and restart the stac
 		$(STAGING_COMPOSE) build && \
 		$(STAGING_COMPOSE) up -d && \
 		$(STAGING_COMPOSE) restart scheduler"
+
+.PHONY: deploy-prod
+deploy-prod:  ## Rsync the repo to production, then rebuild and restart the stack
+	rsync -avz --delete \
+		--exclude .venv \
+		--exclude .ropeproject \
+		--exclude .ruff_cache \
+		--exclude .claude \
+		--exclude docs \
+		--exclude private_media \
+		--exclude node_modules \
+		--exclude __pycache__ \
+		--exclude .git \
+		--exclude .gitsecret \
+		--exclude .env \
+		. "$(PROD_HOST):$(PROD_DIR)/"
+	ssh $(PROD_HOST) "cd $(PROD_DIR) && \
+		$(PROD_COMPOSE) build && \
+		$(PROD_COMPOSE) up -d && \
+		$(PROD_COMPOSE) restart scheduler"
